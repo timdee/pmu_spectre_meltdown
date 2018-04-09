@@ -11,3 +11,11 @@ GOAL:
 ATTACK
 VICTIM
 ATTACK
+
+NOTE:
+another approach might be to
+fork {front_end, victim, back_end} 
+from the same program.
+Perf can then follow each of them.
+OR perf system calls might be used.
+
