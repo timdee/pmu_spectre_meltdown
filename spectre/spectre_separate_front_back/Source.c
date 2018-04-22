@@ -13,6 +13,19 @@
 #define sscanf_s sscanf
 #endif
 
+
+/********************************************************************
+this code is modified in the following way
+1. new processes are forked for each of { front_end, victim, back_end }
+2. the processes use shared memory
+3. perf system calls are used to measure counter values
+OR
+why not just use perf system calls to measure values?
+********************************************************************/
+#include "pmu.h"
+#define LOG_FILE "log/front_end.csv"
+
+
 /********************************************************************
 Victim code.
 ********************************************************************/
@@ -33,6 +46,7 @@ void victim_function(size_t x)
 		temp &= array2[array1[x] * 512];
 	}
 }
+
 
 /********************************************************************
 Analysis code
@@ -114,6 +128,13 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 
 int main(int argc, const char* * argv)
 {
+	// PMU
+	enable_pmu();
+	start_pmu();
+
+	read_pmu();
+	read_pmu();
+
 	printf("Putting '%s' in memory, address %p\n", secret, (void *)(secret));
 	size_t malicious_x = (size_t)(secret - (char *)array1); /* default for malicious_x */
 	int score[2], len = strlen(secret);
@@ -143,9 +164,13 @@ int main(int argc, const char* * argv)
 				   score[1]);
 		printf("\n");
 	}
-#ifdef _MSC_VER
-	printf("Press ENTER to exit\n");
-	getchar();	/* Pause Windows console */
-#endif
+	
+	
+	// PMU
+	stop_pmu();
+	disable_pmu();
+	
+	log_pmu(LOG_FILE);
+	
 	return (0);
 }

@@ -8,9 +8,11 @@ GOAL:
 5. perform PCA to determine important events
 5.1 R script?
 
+
 ATTACK
 VICTIM
 ATTACK
+
 
 NOTE:
 another approach might be to
@@ -19,3 +21,6 @@ from the same program.
 Perf can then follow each of them.
 OR perf system calls might be used.
 
+
+IDEA:
+- put all variables into shared memory.

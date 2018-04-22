@@ -1,12 +1,12 @@
 CFLAGS = -std=c99 -ggdb
 
 PROGRAM = spectre.out
-SOURCE  = Source.c
+SOURCE  = Source.c pmu.c 
 
 
 all: $(PROGRAM) f b v
      
-$(PROGRAM): $(SOURCE) ; $(CC) $(CFLAGS) -o $(PROGRAM) $(SOURCE)
+$(PROGRAM): $(SOURCE) pmu.h ; $(CC) $(CFLAGS) -o $(PROGRAM) $(SOURCE)
 
 f: front_end.c ; $(CC) $(CFLAGS) -o front_end.out $<
 

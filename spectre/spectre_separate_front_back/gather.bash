@@ -27,3 +27,5 @@ FLAGS="-d -d -d"
 perf stat $FLAGS $COUNTERS ./front_end.out
 perf stat $FLAGS $COUNTERS ./back_end.out
 perf stat $FLAGS $COUNTERS ./victim.out
+
+#TODO may need to use perf system calls
