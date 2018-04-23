@@ -122,24 +122,29 @@ void enable_pmu(){
 	for(int i=0; i<N_COUNTER; i++)
 		if (fd[i] == -1) {
 			fprintf(stderr, "Error opening leader %llx\n", pe.config);
-			exit(EXIT_FAILURE);
+			//exit(EXIT_FAILURE);
 		}else{
 			fprintf(stderr, "open success: %d\n", i);
 		}
 }
 void disable_pmu(){
-	for(int i=0; i<N_COUNTER; i++)
+	for(int i=0; i<N_COUNTER; i++){
+		if(fd[i]==-1) continue;
 		close(fd[i]);	
+	}
 }
 void start_pmu(){
 	for(int i=0; i<N_COUNTER; i++){
+		if(fd[i]==-1) continue;
 		ioctl(fd[i], PERF_EVENT_IOC_RESET, 0);
 		ioctl(fd[i], PERF_EVENT_IOC_ENABLE, 0);
 	}
 }
 void stop_pmu(){
-	for(int i=0; i<N_COUNTER; i++)
+	for(int i=0; i<N_COUNTER; i++){
+		if(fd[i]==-1) continue;
 		ioctl(fd[i], PERF_EVENT_IOC_DISABLE, 0);
+	}
 }
 void read_pmu(){
 	//TODO where to store the value of the read?
@@ -148,8 +153,10 @@ void read_pmu(){
 	// Thinking ahead, the pyp will be trained upon a read
 	// 	it doesn't make sence to spend a bunch of time on a complexe storage system
 	// 	a staticly sized buffer may do the trick
-	for(int i=0; i<N_COUNTER; i++)
-		read(fd[i], read_buffer[i]+read_buffer_size, sizeof(long long));
+	for(int i=0; i<N_COUNTER; i++){
+		if(fd[i]==-1) *(read_buffer[i]+read_buffer_size)=0;
+		else read(fd[i], read_buffer[i]+read_buffer_size, sizeof(long long));
+	}
 	//printf("%lld\n", read_buffer[read_buffer_size]);
 	read_buffer_size++;
 }

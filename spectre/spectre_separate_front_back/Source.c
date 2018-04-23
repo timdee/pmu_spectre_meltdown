@@ -67,6 +67,10 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 		results[i] = 0;
 	for (tries = 999; tries > 0; tries--)
 	{
+		// PMU
+		read_pmu();
+		
+		
 		/* Flush array2[256*(0..255)] from cache */
 		for (i = 0; i < 256; i++)
 			_mm_clflush(&array2[i * 512]); /* intrinsic for clflush instruction */
@@ -89,6 +93,11 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 			/* Call the victim! */
 			victim_function(x);
 		}
+
+
+		// PMU
+		read_pmu();
+
 
 		/* Time reads. Order is lightly mixed up to prevent stride prediction */
 		for (i = 0; i < 256; i++)
@@ -132,6 +141,8 @@ int main(int argc, const char* * argv)
 	enable_pmu();
 	start_pmu();
 
+	// this will tell me how many commands each read_pmu() call takes
+	// PMU
 	read_pmu();
 	read_pmu();
 
