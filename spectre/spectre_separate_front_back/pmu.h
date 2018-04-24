@@ -47,7 +47,7 @@ static int read_buffer_size;
 
 // read buffer used with perf (FOR TESTING)
 #define READ_BUFFER_SIZE_MAX 10000
-#define N_COUNTER 9
+#define N_COUNTER 8 
 static long long read_buffer[N_COUNTER][READ_BUFFER_SIZE_MAX];
 
 // define methods to use pmu
@@ -59,6 +59,8 @@ void enable_pmu();
 void disable_pmu();
 // start counters
 void start_pmu();
+// reset counters
+void reset_pmu();
 // stop counters
 void stop_pmu();
 // read counters -- the data is stored until log is called

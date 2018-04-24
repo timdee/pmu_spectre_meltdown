@@ -67,57 +67,114 @@ void enable_pmu(){
 	pe.exclude_kernel = 1;
 	pe.exclude_hv = 1;
 	
+
 	// COUNTERS
+	int c=0;
+	
 	// branches and instructions
 	pe.type = PERF_TYPE_HARDWARE;
 	pe.config = PERF_COUNT_HW_INSTRUCTIONS;
-	fd[0] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
 	
 	pe.type = PERF_TYPE_HARDWARE;
 	pe.config = PERF_COUNT_HW_BRANCH_INSTRUCTIONS;
-	fd[1] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
 	
 	pe.type = PERF_TYPE_HARDWARE;
 	pe.config = PERF_COUNT_HW_BRANCH_MISSES;
-	fd[2] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+
+
+	// cache
+	pe.type = PERF_TYPE_HARDWARE;
+	pe.config = PERF_COUNT_HW_CACHE_REFERENCES;
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+
+	pe.type = PERF_TYPE_HARDWARE;
+	pe.config = PERF_COUNT_HW_CACHE_MISSES;
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
 	
+	// perhaps a simultaneous miss in all levels of cache
+	// will tell us a flush is happening?
+	/*
+	pe.type = PERF_TYPE_HW_CACHE;
+	pe.config = PERF_COUNT_HW_CACHE_L1D | 
+		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
+		(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	
+	pe.type = PERF_TYPE_HW_CACHE;
+	pe.config = PERF_COUNT_HW_CACHE_L1D | 
+		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
+		(PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	
+	pe.type = PERF_TYPE_HW_CACHE;
+	pe.config = PERF_COUNT_HW_CACHE_LL | 
+		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
+		(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	
+	pe.type = PERF_TYPE_HW_CACHE;
+	pe.config = PERF_COUNT_HW_CACHE_LL | 
+		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
+		(PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	*/
+	
+
+	// timer
+	pe.type = PERF_TYPE_SOFTWARE;
+	pe.config = PERF_COUNT_SW_CPU_CLOCK;
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+
+
 	// read, write, prefetch ACCESS
+	/* NOT WORKING
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_WRITE << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16);
-	fd[3] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	*/
 	
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16);
-	fd[4] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
 	
+	/* NOT WORKING
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_PREFETCH << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_ACCESS << 16);
-	fd[5] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	*/
 	
+
 	// read, write, prefetch MISS
+	/* NOT WORKING
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_WRITE << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
-	fd[6] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	*/
 	
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_READ << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
-	fd[7] = perf_event_open(&pe, 0, -1, -1, 0);
-	
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+
+	/* NOT WORKING
 	pe.type = PERF_TYPE_HW_CACHE;
 	pe.config = PERF_COUNT_HW_CACHE_BPU | 
 		(PERF_COUNT_HW_CACHE_OP_PREFETCH << 8) | 
 		(PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
-	fd[8] = perf_event_open(&pe, 0, -1, -1, 0);
+	fd[c++] = perf_event_open(&pe, 0, -1, -1, 0);
+	*/
 	
 	for(int i=0; i<N_COUNTER; i++)
 		if (fd[i] == -1) {
@@ -138,6 +195,12 @@ void start_pmu(){
 		if(fd[i]==-1) continue;
 		ioctl(fd[i], PERF_EVENT_IOC_RESET, 0);
 		ioctl(fd[i], PERF_EVENT_IOC_ENABLE, 0);
+	}
+}
+void reset_pmu(){
+	for(int i=0; i<N_COUNTER; i++){
+		if(fd[i]==-1) continue;
+		ioctl(fd[i], PERF_EVENT_IOC_RESET, 0);
 	}
 }
 void stop_pmu(){
