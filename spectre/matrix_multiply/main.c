@@ -21,6 +21,7 @@ int main(){
 	for(int i=0;i<ITERATIONS;++i){
 		reset_pmu();
 
+		//initialize_matrices();
 		multiply();
 		transpose();	
 
